@@ -24,12 +24,15 @@ int main() {
 	SetConsoleOutputCP(1251);
 
 	int a_matrix[matrix_size][matrix_size] = {
+		/*{4,2,2,1},{2,5,1,2},
+		{2,1,5,1},{1,2,1,4.875}*/
 		{	20,	3,	5,	7	},
 		{	3,	15,	7,	1	},
 		{	5,	7,	17,	2	},
 		{	7,	1,	2,	15	}
 	},
 		b_matrix[matrix_size] = {
+		/*9,10,9,8.875*/
 		32,
 		11,
 		24,
@@ -55,6 +58,8 @@ int main() {
 			b_matrix[i]);
 		}
 		
+	printf("\n\t\tМетод квадратних коренів\n\n");
+
 		//невиродженість матриці / non-degeneracy  matrix
 
 
@@ -74,15 +79,25 @@ int main() {
 		//нижньо-трикутна матриця / bottom triangl matrix
 	lb_triangl_matrix[0][0] = sqrt(a_matrix[0][0]);
 	for (int col = 1; col < matrix_size; col++)
-		lb_triangl_matrix[0][col] = a_matrix[0][col] / lb_triangl_matrix[0][0];
+		lb_triangl_matrix[0][col] = a_matrix[0][col] / lb_triangl_matrix[0][0];//..
 
+	//float Eki{ 0.0f };
+	//for (int k = 1; k < matrix_size; k++) {//diagonal
+	//	Eki = 0.0f;
+	//	for (int i = 0; i < matrix_size; i++) {
+	//		Eki += pow(lb_triangl_matrix[k][i], 2);
+	//	}
+	//		lb_triangl_matrix[k][k] = sqrt(a_matrix[k][k] - Eki);
+	//}
 	lb_triangl_matrix[1][1] = sqrt(a_matrix[1][1] - pow(lb_triangl_matrix[0][1], 2));
+	
 	for (int col = 2; col < matrix_size; col++)
-		lb_triangl_matrix[1][col] = (a_matrix[1][col] - lb_triangl_matrix[0][1] * lb_triangl_matrix[0][col]) / a_matrix[1][1];
+		lb_triangl_matrix[1][col] = (a_matrix[1][col] - lb_triangl_matrix[0][1]
+			* lb_triangl_matrix[0][col]) / lb_triangl_matrix[1][1];
 
 	lb_triangl_matrix[2][2] = sqrt(a_matrix[2][2] - pow(lb_triangl_matrix[0][2], 2) - pow(lb_triangl_matrix[1][2], 2));
 	lb_triangl_matrix[2][3] = (a_matrix[2][3] - lb_triangl_matrix[0][2] * lb_triangl_matrix[0][3]
-		- lb_triangl_matrix[1][2] * lb_triangl_matrix[1][3]) / lb_triangl_matrix[2][2];
+- lb_triangl_matrix[1][2] * lb_triangl_matrix[1][3]) / lb_triangl_matrix[2][2];
 	
 	float Euk4{ 0.0f };
 	for (int k = 0; k < matrix_size-1; k++)
@@ -114,19 +129,25 @@ int main() {
 	MulMatrix(transp_lb_triangl, lb_triangl_matrix, buffA_matrix, 4, 4, 4);
 
 	for (int i = 0; i < matrix_size; i++)
-		printf("	\t%g\t%g\t%g\t%g\n",
-			buffA_matrix[i][0], buffA_matrix[i][1],
-			buffA_matrix[i][2], buffA_matrix[i][3]);
+		/*printf("	\t%d\t%d\t%d\t%d\n",
+			(int)buffA_matrix[i][0], (int)buffA_matrix[i][1],
+			(int)buffA_matrix[i][2], (int)buffA_matrix[i][3]);*/
+	printf("	\t%g\t%g\t%g\t%g\n",
+		buffA_matrix[i][0], buffA_matrix[i][1],
+		buffA_matrix[i][2], buffA_matrix[i][3]);
 
 
 	//знаходження у значень / finding y`s
 	y_matrix[0] = b_matrix[0] / lb_triangl_matrix[0][0];
-	y_matrix[1] = (b_matrix[1] - lb_triangl_matrix[0][1] * y_matrix[0]) / lb_triangl_matrix[1][1];
-	y_matrix[2] = (b_matrix[2] - lb_triangl_matrix[0][2] * y_matrix[0] - lb_triangl_matrix[1][2] 
-		* y_matrix[1])/ lb_triangl_matrix[2][2];
+	y_matrix[1] = (b_matrix[1] - (lb_triangl_matrix[0][1] * y_matrix[0])) / lb_triangl_matrix[1][1];
+	y_matrix[2] = ((b_matrix[2] - lb_triangl_matrix[0][2] * y_matrix[0]) 
+		- (lb_triangl_matrix[1][2] * y_matrix[1]))
+		/ lb_triangl_matrix[2][2];
 
-	y_matrix[3] = (b_matrix[3] - lb_triangl_matrix[0][3] * y_matrix[0] - lb_triangl_matrix[1][3] 
-		* y_matrix[1] - lb_triangl_matrix[2][3] * y_matrix[2]) / lb_triangl_matrix[3][3];
+	y_matrix[3] = (b_matrix[3] - (lb_triangl_matrix[0][3] * y_matrix[0])
+		- (lb_triangl_matrix[1][3] * y_matrix[1])
+		- (lb_triangl_matrix[2][3] * y_matrix[2]))
+		/ lb_triangl_matrix[3][3];
 
 
 	//знаходження х значень / get X`s
@@ -138,11 +159,26 @@ int main() {
 	x_matrix[0] = (y_matrix[0] - lb_triangl_matrix[0][1] * x_matrix[1] - lb_triangl_matrix[0][2]
 		* x_matrix[2] - lb_triangl_matrix[0][3] * x_matrix[3]) / lb_triangl_matrix[0][0];
 
-	printf("\n\t%g\t%g\t%g\t%g\n\n", x_matrix[0], x_matrix[1], x_matrix[2], x_matrix[3]);
+	printf("\n\t%g\t%g\t%g\t%g\n\n\n", x_matrix[0], x_matrix[1], x_matrix[2], x_matrix[3]);
+
+
+	printf("\t\tМетод Ортогоналізації\n\n");
+
 
 	system("pause");
 
 }
+
+
+
+
+
+
+
+
+
+
+
 //#include<iostream>
 //using namespace std;
 //int main()
